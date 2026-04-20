@@ -1,0 +1,327 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  name             String
+  password_hash    String?
+  image            String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  cloudreve_token  String?
+  cloudreve_uid    String?
+  provisioned      Boolean  @default(false)
+  is_admin         Boolean  @default(false)
+
+  // Relations
+  threads           ChatThread[]
+  userMemory        UserMemory?
+  settings          UserSettings?
+  skyway_agents     SkywayAgent[]
+  nimbus_clouds     NimbusCloudAgent[]
+  marketplace_items MarketplaceEntry[]
+  installed_items   InstalledMarketplaceItem[]
+  reviews           MarketplaceReview[]
+  roleplay_chars    RoleplayCharacter[]
+  roleplay_sessions RoleplaySession[]
+  lore_entries      LoreEntry[]
+
+  @@map("users")
+}
+
+model ChatThread {
+  id         String    @id @default(cuid())
+  title      String
+  summary    String?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  user_id    String
+
+  user     User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([user_id])
+  @@map("chat_threads")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  role        String
+  content     String
+  mode        String?
+  attachments String?
+  created_at  DateTime @default(now())
+  thread_id   String
+
+  thread ChatThread @relation(fields: [thread_id], references: [id], onDelete: Cascade)
+
+  @@index([thread_id])
+  @@map("messages")
+}
+
+model UserMemory {
+  id              String   @id @default(cuid())
+  ideas           String?
+  questions       String?
+  topics          String?
+  preferences     String?
+  context_summary String?
+  updated_at      DateTime @updatedAt
+  user_id         String   @unique
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_memory")
+}
+
+model UserSettings {
+  id               String   @id @default(cuid())
+  theme            String   @default("dark")
+  language         String   @default("en")
+  notifications    Boolean  @default(true)
+  speech_enabled   Boolean  @default(true)
+  auto_save        Boolean  @default(true)
+  active_agent_id  String?
+  installed_addons String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  user_id          String   @unique
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+// ── Sky-Way Agents ─────────────────────────────────────────────────────────────
+model SkywayAgent {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  personality    String?
+  instructions   String?
+  knowledge_base String?
+  skills         String?
+  icon           String   @default("🤖")
+  color          String   @default("#facc15")
+  temperature    Float    @default(0.7)
+  is_active      Boolean  @default(false)
+  source         String   @default("custom")
+  source_item_id String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  user_id        String
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("skyway_agents")
+}
+
+// ── Nimbus Cloud Agents ────────────────────────────────────────────────────────
+model NimbusCloudAgent {
+  id             String    @id @default(cuid())
+  name           String
+  description    String
+  status         String    @default("idle")
+  schedule       String?
+  logs           String    @default("[]")
+  last_run       DateTime?
+  next_run       DateTime?
+  config         String?
+  source         String    @default("custom")
+  source_item_id String?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  user_id        String
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("nimbus_cloud_agents")
+}
+
+// ── Marketplace ────────────────────────────────────────────────────────────────
+model MarketplaceEntry {
+  id               String   @id @default(cuid())
+  name             String
+  description      String
+  long_description String?
+  category         String
+  icon             String   @default("✨")
+  author_id        String
+  author_name      String
+  version          String   @default("1.0.0")
+  config_schema    String?
+  payload          String?
+  tags             String   @default("[]")
+  screenshots      String   @default("[]")
+  status           String   @default("pending")
+  review_notes     String?
+  downloads        Int      @default(0)
+  rating_sum       Int      @default(0)
+  rating_count     Int      @default(0)
+  is_official      Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  author   User                       @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  reviews  MarketplaceReview[]
+  installs InstalledMarketplaceItem[]
+
+  @@index([author_id])
+  @@index([category])
+  @@index([status])
+  @@map("marketplace_entries")
+}
+
+model MarketplaceReview {
+  id          String   @id @default(cuid())
+  rating      Int
+  comment     String?
+  created_at  DateTime @default(now())
+  entry_id    String
+  reviewer_id String
+
+  entry    MarketplaceEntry @relation(fields: [entry_id], references: [id], onDelete: Cascade)
+  reviewer User             @relation(fields: [reviewer_id], references: [id], onDelete: Cascade)
+
+  @@unique([entry_id, reviewer_id])
+  @@index([entry_id])
+  @@map("marketplace_reviews")
+}
+
+model InstalledMarketplaceItem {
+  id           String   @id @default(cuid())
+  entry_id     String
+  user_id      String
+  config       String?
+  installed_at DateTime @default(now())
+
+  entry MarketplaceEntry @relation(fields: [entry_id], references: [id], onDelete: Cascade)
+  user  User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([entry_id, user_id])
+  @@index([user_id])
+  @@map("installed_marketplace_items")
+}
+
+// ── Roleplay Engine ────────────────────────────────────────────────────────────
+model RoleplayCharacter {
+  id               String   @id @default(cuid())
+  name             String
+  avatar           String
+  backstory        String
+  personality      String
+  traits           String
+  appearance       String
+  voice            String
+  relationships    String   @default("{}")
+  lore_connections String   @default("[]")
+  memory_summary   String   @default("")
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  user_id          String
+
+  user     User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  sessions RoleplaySession[]
+
+  @@index([user_id])
+  @@map("roleplay_characters")
+}
+
+model RoleplaySession {
+  id            String   @id @default(cuid())
+  character_id  String
+  lore_context  String   @default("[]")
+  active_memory String   @default("")
+  mood          String   @default("neutral")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  user_id       String
+
+  user      User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  character RoleplayCharacter   @relation(fields: [character_id], references: [id], onDelete: Cascade)
+  messages  RoleplayMessage[]
+
+  @@index([user_id])
+  @@index([character_id])
+  @@map("roleplay_sessions")
+}
+
+model RoleplayMessage {
+  id         String   @id @default(cuid())
+  session_id String
+  role       String
+  content    String
+  emotion    String?
+  action     String?
+  created_at DateTime @default(now())
+
+  session RoleplaySession @relation(fields: [session_id], references: [id], onDelete: Cascade)
+
+  @@index([session_id])
+  @@map("roleplay_messages")
+}
+
+model LoreEntry {
+  id             String   @id @default(cuid())
+  title          String
+  content        String
+  category       String
+  tags           String   @default("[]")
+  connections    String   @default("[]")
+  auto_generated Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  user_id        String
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([category])
+  @@map("lore_entries")
+}
+
+model Account {
+  id                  String  @id @default(cuid())
+  user_id             String
+  type                String
+  provider            String
+  provider_account_id String
+  refresh_token       String?
+  access_token        String?
+  expires_at          Int?
+  token_type          String?
+  scope               String?
+  id_token            String?
+  session_state       String?
+
+  @@unique([provider, provider_account_id])
+  @@index([user_id])
+  @@map("accounts")
+}
+
+model Session {
+  id            String   @id @default(cuid())
+  session_token String   @unique
+  user_id       String
+  expires       DateTime
+
+  @@index([user_id])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

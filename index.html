@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic meta data -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluxxAI – Your Elite AI Engineering Agent</title>
+
+    <!-- Simple, modern styling – no external dependencies -->
+    <style>
+        /* Reset a few defaults */
+        *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            background: #f9fafb;
+            color: #333;
+            padding: 1rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, #4f46e5, #6d28d9);
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: .5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        main {
+            max-width: 960px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            color: #4f46e5;
+            margin-bottom: .75rem;
+            font-size: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+            /* 2‑column layout on medium+ screens */
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .card {
+            background: white;
+            border-radius: .5rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,.1);
+            padding: 1.5rem;
+            transition: transform .2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #111827;
+        }
+
+        footer {
+            text-align: center;
+            font-size: .9rem;
+            color: #777;
+            margin-top: 4rem;
+            padding: 1rem 0;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        a:hover { text-decoration: underline; }
+
+        /* Accessibility helpers */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header – quick intro -->
+    <header>
+        <h1>FluxxAI</h1>
+        <p>A calm, direct, and highly‑technical AI engineering agent built on an open‑source 120‑billion‑parameter foundation model. FluxxAI can code, architect, debug, and orchestrate deployments—all while following strict safety, documentation‑first, and anti‑hallucination policies.</p>
+    </header>
+
+    <main>
+        <!-- Overview -->
+        <section id="overview">
+            <h2>What Is FluxxAI?</h2>
+            <p>FluxxAI is a full‑spectrum systems‑intelligence assistant. It combines conversational support, production‑grade code generation, CI/CD orchestration, and infrastructure design into a single, reliable entity. All actions are grounded in official documentation and verified before execution.</p>
+        </section>
+
+        <!-- Core Capabilities -->
+        <section id="capabilities">
+            <h2>Core Capabilities</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>💬 Conversational Assistant</h3>
+                    <p>Provides clear, concise explanations, planning, and research synthesis with citations.</p>
+                </div>
+                <div class="card">
+                    <h3>💻 Code Generation</h3>
+                    <p>Writes production‑ready code in many languages, complete with type hints, docs, and error handling.</p>
+                </div>
+                <div class="card">
+                    <h3>🔧 Debugging & Refactoring</h3>
+                    <p>Follows a step‑by‑step debugging protocol to isolate, test, and fix issues reliably.</p>
+                </div>
+                <div class="card">
+                    <h3>🚀 Deployment Automation</h3>
+                    <p>Manages Docker, Kubernetes, CI pipelines, and cloud resources with safe, staged deployments.</p>
+                </div>
+                <div class="card">
+                    <h3>📊 Observability Design</h3>
+                    <p>Recommends logging, tracing, and metrics hooks for production‑grade services.</p>
+                </div>
+                <div class="card">
+                    <h3>🔐 Security‑First</h3>
+                    <p>Never stores secrets in outputs, validates all inputs, and requires explicit confirmation for destructive actions.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Snapshot -->
+        <section id="architecture">
+            <h2>Architecture Snapshot</h2>
+            <p>FluxxAI runs atop a 120B parameter open‑source LLM, wrapped in a policy engine that enforces the following principles:</p>
+            <ul>
+                <li><strong>Documentation First:</strong> every claim is backed by an official source.</li>
+                <li><strong>Anti‑Hallucination:</strong> uncertain facts are flagged and never assumed.</li>
+                <li><strong>Staged Execution:</strong> destructive or deploy actions require user confirmation and dry‑run previews.</li>
+                <li><strong>Modular Modes:</strong> Chat, Code, Agent, and Deploy modes keep responsibilities clean.</li>
+            </ul>
+        </section>
+
+        <!-- Sample Use‑Cases -->
+        <section id="usecases">
+            <h2>Typical Use‑Cases</h2>
+            <ul>
+                <li>Rapid prototyping of micro‑services with CI/CD pipelines.</li>
+                <li>Automated code reviews and style enforcement across repositories.</li>
+                <li>Infrastructure‑as‑Code generation for DigitalOcean, AWS, GCP, or Kubernetes.</li>
+                <li>Security hardening recommendations for web applications.</li>
+                <li>Educational walkthroughs for complex topics (e.g., distributed tracing).</li>
+            </ul>
+        </section>
+
+        <!-- Contact / Feedback -->
+        <section id="contact">
+            <h2>Get Started</h2>
+            <p>Interact with FluxxAI via any supported chat interface, or embed it into your tooling pipeline using the <a href="https://github.com/fluxxai/fluxxai" target="_blank">open‑source SDK</a>.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        © 2024 FluxxAI – Built on open‑source foundations. All rights reserved.
+    </footer>
+</body>
+</html>

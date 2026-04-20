@@ -1,0 +1,87 @@
+@import 'tailwindcss';
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+/* Base */
+html, body {
+  background-color: #000;
+  color: #f1f5f9;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Markdown prose overrides ─────────────────────────────────────────────── */
+.prose-nimbus > * + * {
+  margin-top: 0;
+}
+
+/* Ordered list numbers use yellow accent */
+.prose-nimbus ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+
+.prose-nimbus ol li::marker {
+  color: rgba(250, 204, 21, 0.7);
+  font-weight: 600;
+}
+
+/* Unordered list — bullets handled inline via React */
+.prose-nimbus ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Code inside paragraphs */
+.prose-nimbus p code {
+  background: rgba(255,255,255,0.08);
+  color: #fde68a;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.82em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Syntax highlighter scrollbar */
+.prose-nimbus pre::-webkit-scrollbar {
+  height: 6px;
+}
+.prose-nimbus pre::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.4);
+  border-radius: 3px;
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(59, 130, 246, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
