@@ -11,9 +11,13 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+# Generate Prisma client before building
+RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
 # Skip type checking in Docker — types are verified in CI before image build
 ENV NEXT_SKIP_TYPE_CHECK=1
+# Provide a dummy DATABASE_URL so Next.js can statically analyze API routes
+ENV DATABASE_URL=file:./nimbus.db
 RUN npm run build
 
 # Stage 3: Runtime
