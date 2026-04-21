@@ -1,10 +1,10 @@
 /**
  * lib/prisma.ts
  * Prisma client singleton for use across the app.
- * Prisma 7 requires an adapter for SQLite.
  */
 
-import { PrismaClient } from '@prisma/client';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { PrismaClient } = require('@prisma/client');
 import { PrismaLibSql } from '@prisma/adapter-libsql';
 
 const dbUrl = process.env.DATABASE_URL ?? 'file:./nimbus.db';
@@ -13,9 +13,8 @@ const adapter = new PrismaLibSql({
   url: dbUrl,
 });
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const globalForPrisma = globalThis as unknown as { prisma: any };
 
 export const prisma =
   globalForPrisma.prisma ??

@@ -53,13 +53,13 @@ export async function getUserThreads(userId: string): Promise<ChatThread[]> {
       },
     },
   });
-  return threads.map((t) => ({
+  return threads.map((t: any) => ({
     id: t.id,
     title: t.title,
     summary: t.summary,
     created_at: t.created_at,
     updated_at: t.updated_at,
-    messages: t.messages.map((m) => ({
+    messages: t.messages.map((m: any) => ({
       id: m.id,
       role: m.role as 'user' | 'assistant',
       content: m.content,
@@ -86,7 +86,7 @@ export async function getThread(userId: string, threadId: string): Promise<ChatT
     summary: thread.summary,
     created_at: thread.created_at,
     updated_at: thread.updated_at,
-    messages: thread.messages.map((m) => ({
+    messages: thread.messages.map((m: any) => ({
       id: m.id,
       role: m.role as 'user' | 'assistant',
       content: m.content,
