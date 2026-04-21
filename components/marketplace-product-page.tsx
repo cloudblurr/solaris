@@ -111,7 +111,6 @@ export default function MarketplaceProductPage({
           actions: [
             { label: 'Import Character', action: 'import', primary: true },
             { label: 'View Details', action: 'view', primary: false },
-            { label: 'Start Roleplay', action: 'roleplay', primary: false },
           ],
           configFields: [
             { name: 'name', label: 'Character Name', type: 'text', default: item.name },

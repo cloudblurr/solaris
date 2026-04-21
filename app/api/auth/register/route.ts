@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
-import { provisionCloudreveUser } from '@/lib/cloudreve';
+import { provisionUserFolders } from '@/lib/cloudreve-stub';
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,23 +60,8 @@ export async function POST(request: NextRequest) {
 
     console.log('[Register] User created successfully:', user.id);
 
-    // Provision Cloudreve account (non-blocking)
-    provisionCloudreveUser({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    }).then(async (result) => {
-      if (result) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            cloudreve_token: result.token,
-            cloudreve_uid: result.uid,
-            provisioned: true,
-          },
-        });
-      }
-    }).catch((err) => {
+    // Provision Cloudreve folders (non-blocking)
+    provisionUserFolders(user.id).catch((err) => {
       console.error('[Register] Cloudreve provisioning error:', err);
     });
 

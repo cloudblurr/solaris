@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { backupDatabaseToCloudreve, restoreDatabaseFromCloudreve } from '@/lib/db-sync';
+import { backupDatabaseToCloudreve, restoreDatabaseFromCloudreve } from '@/lib/db-sync-stub';
 
 // POST - Backup database to Cloudreve
 export async function POST() {

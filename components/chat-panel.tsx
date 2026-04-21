@@ -4,9 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2, Copy, Check, RotateCcw, Sparkles, Globe, Code2, Lightbulb,
   MoreHorizontal, Paperclip, Mic, MicOff, Send, Pencil, Share, Star,
-  Ellipsis, Cloud, Wand2, X, FileText, Image, FileCode, File,
+  Ellipsis, Zap, Wand2, X, FileText, Image, FileCode, File,
   ChevronDown, Languages, AlignLeft, HelpCircle, Bug,
 } from 'lucide-react';
+import { useTheme } from '@/components/theme-provider';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -62,18 +63,18 @@ function TypingDots() {
   );
 }
 
-// ── Nimbus header ─────────────────────────────────────────────────────────────
+// ── Solaris header ────────────────────────────────────────────────────────────
 function NimbusHeader({ mode }: { mode?: ChatMode }) {
   const modeConfig = mode && mode !== 'default' ? CHAT_MODES[mode] : null;
   return (
     <div className="flex items-center gap-2 mb-2">
-      <div className="relative flex items-center justify-center w-6 h-6 rounded-lg bg-gradient-to-br from-blue-600 to-blue-900 shadow-md shadow-blue-900/40">
-        <Cloud className="h-3.5 w-3.5 text-blue-200" strokeWidth={1.5} />
-        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-yellow-400 flex items-center justify-center">
-          <Sparkles className="h-1.5 w-1.5 text-black" />
+      <div className="relative flex items-center justify-center w-6 h-6 rounded-lg bg-gradient-to-br from-[#f05a28] to-[#e03020] shadow-md shadow-orange-700/40 border border-black/30">
+        <Zap className="h-3.5 w-3.5 text-white" strokeWidth={2} />
+        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-white flex items-center justify-center border border-black/20">
+          <Sparkles className="h-1.5 w-1.5 text-[#f05a28]" />
         </span>
       </div>
-      <span className="text-xs font-semibold text-gray-300 tracking-wide">Nimbus AI</span>
+      <span className="text-xs font-semibold text-gray-300 tracking-wide">SolarisAI</span>
       {modeConfig && (
         <span className={cn('text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-white/5 border border-white/8', modeConfig.color)}>
           {modeConfig.label}
@@ -100,26 +101,26 @@ function MessageBubble({ message, isLast, onRegenerate, isLoading }: {
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-end gap-3">
         <div className="flex flex-col items-end gap-1.5 max-w-[72%]">
-          <div className="bg-[#1a1a2e] border border-blue-500/20 rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-gray-100 leading-relaxed">
+          <div className="bg-gradient-to-br from-[#f05a28] to-[#e03020] border border-black/20 rounded-2xl rounded-tr-sm px-4 py-3 text-sm text-white leading-relaxed shadow-lg shadow-orange-700/20">
             {message.attachments && message.attachments.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {message.attachments.map((f, i) => (
-                  <div key={i} className="flex items-center gap-1 bg-white/8 border border-white/10 rounded-lg px-2 py-1">
+                  <div key={i} className="flex items-center gap-1 bg-black/20 border border-white/20 rounded-lg px-2 py-1">
                     <FileIcon type={f.type} />
-                    <span className="text-[10px] text-gray-300 max-w-[100px] truncate">{f.name}</span>
+                    <span className="text-[10px] text-white/80 max-w-[100px] truncate">{f.name}</span>
                   </div>
                 ))}
               </div>
             )}
             <p className="whitespace-pre-wrap break-words">{message.content}</p>
           </div>
-          <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs text-gray-600 hover:text-gray-400 transition-colors px-1 py-0.5">
+          <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-400 transition-colors px-1 py-0.5">
             {copied ? <Check className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
             {copied ? 'Copied' : 'Copy'}
           </button>
         </div>
-        <Avatar className="h-8 w-8 shrink-0 mt-1 border border-yellow-500/30">
-          <AvatarFallback className="bg-gradient-to-br from-yellow-400 to-yellow-600 text-black text-xs font-bold">U</AvatarFallback>
+        <Avatar className="h-8 w-8 shrink-0 mt-1 border-2 border-black/20">
+          <AvatarFallback className="bg-gradient-to-br from-[#f05a28] to-[#e03020] text-white text-xs font-bold">U</AvatarFallback>
         </Avatar>
       </motion.div>
     );
@@ -169,7 +170,7 @@ function MoreModesMenu({ activeMode, onSelect, onClose }: {
         <button onClick={() => { onSelect('default'); onClose(); }}
           className={cn('w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-all',
             activeMode === 'default' ? 'text-gray-300 bg-white/8 font-semibold' : 'text-gray-500 hover:text-gray-300 hover:bg-white/6')}>
-          <Cloud className="h-3.5 w-3.5 shrink-0" />
+          <Zap className="h-3.5 w-3.5 shrink-0" />
           Default
         </button>
       </div>
@@ -206,6 +207,8 @@ export default function ChatPanel({
   const [speechStatus, setSpeechStatus] = useState<SpeechStatus>('idle');
   const [speechError, setSpeechError] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -343,17 +346,17 @@ export default function ChatPanel({
   const isMoreMode = MORE_MODES.some(m => m.mode === activeMode);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#0d0d0d] min-w-0">
+    <div className={cn('flex-1 flex flex-col h-full min-w-0', isLight ? 'bg-[#f5f2ee]' : 'bg-[#0e0e0f]')}>
       <SelectionToolbar threadId={threadId} onNoteSaved={onNotesSaved} />
 
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-5 py-3 border-b border-white/5 shrink-0">
+      <div className={cn('flex items-center gap-3 px-5 py-3 border-b shrink-0', isLight ? 'border-black/10' : 'border-white/5')}>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <div className="w-4 h-4 rounded border border-white/20 flex items-center justify-center shrink-0">
-            <div className="w-2 h-2 rounded-sm bg-white/40" />
+          <div className={cn('w-4 h-4 rounded border flex items-center justify-center shrink-0', isLight ? 'border-black/20' : 'border-white/20')}>
+            <div className={cn('w-2 h-2 rounded-sm', isLight ? 'bg-black/30' : 'bg-white/40')} />
           </div>
-          <span className="text-sm text-gray-200 truncate font-medium">{threadTitle || 'New conversation'}</span>
-          <button className="text-gray-600 hover:text-gray-400 transition-colors shrink-0"><Pencil className="h-3.5 w-3.5" /></button>
+          <span className={cn('text-sm truncate font-medium', isLight ? 'text-gray-800' : 'text-gray-200')}>{threadTitle || 'New conversation'}</span>
+          <button className={cn('transition-colors shrink-0', isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-600 hover:text-gray-400')}><Pencil className="h-3.5 w-3.5" /></button>
         </div>
         {activeMode !== 'default' && (
           <div className={cn('flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg bg-white/5 border border-white/8', activeModeConfig.color)}>
@@ -362,11 +365,11 @@ export default function ChatPanel({
           </div>
         )}
         <div className="flex items-center gap-1 shrink-0">
-          <button className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white border border-white/10 hover:border-white/20 px-3 py-1.5 rounded-lg transition-all">
+          <button className={cn('flex items-center gap-1.5 text-xs border px-3 py-1.5 rounded-lg transition-all', isLight ? 'text-gray-600 hover:text-gray-900 border-black/15 hover:border-black/30' : 'text-gray-400 hover:text-white border-white/10 hover:border-white/20')}>
             <Share className="h-3.5 w-3.5" />Share
           </button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-200 hover:bg-white/8 transition-all"><Star className="h-4 w-4" /></button>
-          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-200 hover:bg-white/8 transition-all"><Ellipsis className="h-4 w-4" /></button>
+          <button className={cn('w-8 h-8 flex items-center justify-center rounded-lg transition-all', isLight ? 'text-gray-400 hover:text-gray-700 hover:bg-black/5' : 'text-gray-500 hover:text-gray-200 hover:bg-white/8')}><Star className="h-4 w-4" /></button>
+          <button className={cn('w-8 h-8 flex items-center justify-center rounded-lg transition-all', isLight ? 'text-gray-400 hover:text-gray-700 hover:bg-black/5' : 'text-gray-500 hover:text-gray-200 hover:bg-white/8')}><Ellipsis className="h-4 w-4" /></button>
         </div>
       </div>
 
@@ -377,20 +380,21 @@ export default function ChatPanel({
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-24 text-center">
               <motion.div animate={{ scale: [1, 1.06, 1] }} transition={{ duration: 3, repeat: Infinity }} className="mb-6 relative">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center shadow-xl shadow-blue-900/40">
-                  <Cloud className="h-8 w-8 text-blue-200" strokeWidth={1.5} />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f05a28] to-[#e03020] flex items-center justify-center shadow-xl shadow-orange-700/40 border-2 border-black/30">
+                  <Zap className="h-8 w-8 text-white" strokeWidth={1.5} />
                 </div>
-                <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-yellow-400 flex items-center justify-center">
-                  <Sparkles className="h-3 w-3 text-black" />
+                <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center border border-black/20 shadow">
+                  <Sparkles className="h-3 w-3 text-[#f05a28]" />
                 </div>
               </motion.div>
-              <h2 className="text-2xl font-bold text-white mb-2">Ask me anything</h2>
-              <p className="text-gray-500 text-sm max-w-xs">Nimbus AI is ready to help. Start a conversation below.</p>
+              <h2 className={cn('text-2xl font-bold mb-2', isLight ? 'text-gray-900' : 'text-white')}>Ask me anything</h2>
+              <p className={cn('text-sm max-w-xs', isLight ? 'text-gray-500' : 'text-gray-500')}>SolarisAI is ready to help. Start a conversation below.</p>
+              <p className={cn('text-xs mt-1 font-medium tracking-widest uppercase', isLight ? 'text-orange-500/60' : 'text-orange-500/50')}>by terraGravity</p>
               <div className="flex flex-wrap gap-2 mt-6 justify-center">
                 {PRIMARY_MODES.map(({ mode, icon: Icon, label }) => (
                   <button key={mode} onClick={() => setActiveMode(mode)}
                     className={cn('flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-all',
-                      CHAT_MODES[mode].color, 'border-white/10 hover:border-white/20 hover:bg-white/5')}>
+                      CHAT_MODES[mode].color, isLight ? 'border-black/10 hover:border-black/20 hover:bg-black/5' : 'border-white/10 hover:border-white/20 hover:bg-white/5')}>
                     <Icon className="h-3.5 w-3.5" />{label}
                   </button>
                 ))}
@@ -407,7 +411,7 @@ export default function ChatPanel({
           {isLoading && (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-0">
               <NimbusHeader mode={activeMode} />
-              <div className="bg-[#111111] border border-white/8 rounded-2xl rounded-tl-sm px-5 py-3 w-fit"><TypingDots /></div>
+              <div className={cn('border rounded-2xl rounded-tl-sm px-5 py-3 w-fit', isLight ? 'bg-white border-black/10' : 'bg-[#141416] border-white/8')}><TypingDots /></div>
             </motion.div>
           )}
           <div ref={bottomRef} />
@@ -443,18 +447,22 @@ export default function ChatPanel({
           )}
 
           {/* Main input card */}
-          <div className={cn('bg-[#161616] border rounded-2xl overflow-hidden transition-colors',
-            speechStatus === 'listening' ? 'border-blue-500/60' : 'border-white/10 focus-within:border-blue-500/40')}>
+          <div className={cn('rounded-2xl overflow-hidden transition-colors border-2',
+            speechStatus === 'listening'
+              ? 'border-[#f05a28]'
+              : isLight
+                ? 'bg-white border-black/15 focus-within:border-[#f05a28]'
+                : 'bg-[#141416] border-white/10 focus-within:border-[#f05a28]')}>
 
             {/* Enhance indicator */}
             {isEnhanced && (
               <div className="flex items-center gap-2 px-4 pt-2.5 pb-0">
-                <Wand2 className="h-3 w-3 text-yellow-400" />
-                <span className="text-[10px] text-yellow-400 font-medium">
+                <Wand2 className="h-3 w-3 text-[#f05a28]" />
+                <span className="text-[10px] text-[#f05a28] font-medium">
                   Enhanced {enhanceVariation > 1 ? `(variation ${enhanceVariation - 1})` : ''}
                 </span>
                 <button onClick={() => { setInput(originalInput); setIsEnhanced(false); setEnhanceVariation(0); }}
-                  className="ml-auto text-[10px] text-gray-500 hover:text-gray-300 transition-colors">
+                  className={cn('ml-auto text-[10px] transition-colors', isLight ? 'text-gray-400 hover:text-gray-700' : 'text-gray-500 hover:text-gray-300')}>
                   Restore original
                 </button>
               </div>
@@ -463,7 +471,7 @@ export default function ChatPanel({
             <textarea ref={textareaRef} value={input} onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown} placeholder={speechStatus === 'listening' ? 'Listening...' : 'Ask anything...'}
               rows={1} disabled={isLoading}
-              className="w-full bg-transparent px-4 pt-3.5 pb-2 text-sm text-white placeholder:text-gray-600 resize-none focus:outline-none leading-relaxed"
+              className={cn('w-full bg-transparent px-4 pt-3.5 pb-2 text-sm resize-none focus:outline-none leading-relaxed', isLight ? 'text-gray-900 placeholder:text-gray-400' : 'text-white placeholder:text-gray-600')}
               style={{ minHeight: '44px', maxHeight: '128px' }} />
 
             <div className="flex items-center gap-1.5 px-3 pb-3 pt-1">
@@ -503,14 +511,14 @@ export default function ChatPanel({
                 <button onClick={handleEnhance} disabled={!input.trim() || enhancing}
                   title={isEnhanced ? 'Next variation / restore' : 'Enhance prompt'}
                   className={cn('w-8 h-8 flex items-center justify-center rounded-lg transition-all',
-                    isEnhanced ? 'text-yellow-400 bg-yellow-400/10 hover:bg-yellow-400/20'
-                      : input.trim() ? 'text-gray-400 hover:text-yellow-400 hover:bg-white/8' : 'text-gray-700 cursor-not-allowed')}>
+                    isEnhanced ? 'text-[#f05a28] bg-orange-500/10 hover:bg-orange-500/20'
+                      : input.trim() ? isLight ? 'text-gray-500 hover:text-[#f05a28] hover:bg-black/5' : 'text-gray-400 hover:text-[#f05a28] hover:bg-white/8' : 'text-gray-700 cursor-not-allowed')}>
                   {enhancing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
                 </button>
 
                 {/* File attach */}
                 <button onClick={() => fileInputRef.current?.click()}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/8 transition-all"
+                  className={cn('w-8 h-8 flex items-center justify-center rounded-lg transition-all', isLight ? 'text-gray-400 hover:text-gray-700 hover:bg-black/5' : 'text-gray-500 hover:text-gray-300 hover:bg-white/8')}
                   title="Attach file">
                   <Paperclip className="h-4 w-4" />
                 </button>
@@ -523,18 +531,18 @@ export default function ChatPanel({
                     title={speechStatus === 'listening' ? 'Stop listening' : 'Voice input'}
                     className={cn('w-8 h-8 flex items-center justify-center rounded-lg transition-all',
                       speechStatus === 'listening'
-                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30 animate-pulse'
-                        : 'text-gray-500 hover:text-blue-400 hover:bg-white/8')}>
+                        ? 'bg-[#f05a28] text-white shadow-lg shadow-orange-600/30 animate-pulse'
+                        : isLight ? 'text-gray-400 hover:text-[#f05a28] hover:bg-black/5' : 'text-gray-500 hover:text-[#f05a28] hover:bg-white/8')}>
                     {speechStatus === 'listening' ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                   </button>
                 )}
 
                 {/* Send */}
                 <button onClick={handleSubmit} disabled={!input.trim() || isLoading}
-                  className={cn('w-8 h-8 flex items-center justify-center rounded-lg transition-all',
+                  className={cn('w-8 h-8 flex items-center justify-center rounded-lg transition-all border',
                     input.trim() && !isLoading
-                      ? 'bg-yellow-400 text-black hover:bg-yellow-300 shadow-lg shadow-yellow-500/20'
-                      : 'bg-white/8 text-gray-600 cursor-not-allowed')}>
+                      ? 'bg-gradient-to-br from-[#f05a28] to-[#e03020] text-white hover:from-[#f06a38] hover:to-[#e04030] shadow-lg shadow-orange-600/30 border-black/20'
+                      : isLight ? 'bg-black/5 text-gray-400 cursor-not-allowed border-transparent' : 'bg-white/8 text-gray-600 cursor-not-allowed border-transparent')}>
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </button>
               </div>

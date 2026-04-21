@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Redis for job queue
+  redis:
+    image: redis:7-alpine
+    container_name: bg-agent-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # FastAPI backend
+  api:
+    build: .
+    container_name: bg-agent-api
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - GPT_INFERENCE_URL=${GPT_INFERENCE_URL:-http://host.docker.internal:8000/generate}
+      - DO_SPACES_KEY=${DO_SPACES_KEY}
+      - DO_SPACES_SECRET=${DO_SPACES_SECRET}
+      - DO_SPACES_BUCKET=${DO_SPACES_BUCKET:-backups}
+      - DO_SPACES_REGION=${DO_SPACES_REGION:-nyc3}
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend
+      - ./jobs.db:/app/jobs.db
+    command: uvicorn backend.api:app --host 0.0.0.0 --port 8000 --reload
+
+  # RQ Worker
+  worker:
+    build: .
+    container_name: bg-agent-worker
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - GPT_INFERENCE_URL=${GPT_INFERENCE_URL:-http://host.docker.internal:8000/generate}
+      - DO_SPACES_KEY=${DO_SPACES_KEY}
+      - DO_SPACES_SECRET=${DO_SPACES_SECRET}
+      - DO_SPACES_BUCKET=${DO_SPACES_BUCKET:-backups}
+      - DO_SPACES_REGION=${DO_SPACES_REGION:-nyc3}
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend
+      - ./jobs.db:/app/jobs.db
+      - /tmp:/tmp  # For cleanup and backup operations
+    command: python -m backend.worker
+
+  # Streamlit GUI
+  gui:
+    image: python:3.11-slim
+    container_name: bg-agent-gui
+    ports:
+      - "8501:8501"
+    environment:
+      - API_BASE_URL=http://api:8000
+    depends_on:
+      - api
+    volumes:
+      - ./gui:/app
+    working_dir: /app
+    command: >
+      sh -c "pip install --no-cache-dir streamlit requests &&
+             streamlit run app.py --server.port=8501 --server.address=0.0.0.0"
+
+volumes:
+  redis-data:

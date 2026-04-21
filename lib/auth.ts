@@ -9,7 +9,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from './prisma';
 import bcrypt from 'bcryptjs';
-import { provisionCloudreveUser } from './cloudreve';
+import { provisionUserFolders } from './cloudreve-stub';
 
 import GoogleProvider from 'next-auth/providers/google';
 
@@ -88,28 +88,11 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async signIn({ user, account }) {
-      // Non-blocking Cloudreve provisioning
-      if (user.id && user.email && user.name) {
-        // Run provisioning in background - don't block login
-        provisionCloudreveUser({
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        }).then(async (result) => {
-          if (result) {
-            // Update user with Cloudreve token and uid
-            await prisma.user.update({
-              where: { id: user.id },
-              data: {
-                cloudreve_token: result.token,
-                cloudreve_uid: result.uid,
-                provisioned: true,
-              },
-            });
-          }
-        }).catch((err) => {
-          console.error('[Auth] Cloudreve provisioning error:', err);
+    async signIn({ user }) {
+      // Non-blocking folder provisioning on first login
+      if (user.id) {
+        provisionUserFolders(user.id).catch((err) => {
+          console.error('[Auth] Cloudreve folder provisioning error:', err);
         });
       }
       return true;

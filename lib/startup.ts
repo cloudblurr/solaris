@@ -3,7 +3,7 @@
  * Application startup tasks.
  */
 
-import { ensureBackupFolder, startAutoBackup } from './db-sync';
+import { ensureBackupFolder, startAutoBackup } from './db-sync-stub';
 
 let initialized = false;
 

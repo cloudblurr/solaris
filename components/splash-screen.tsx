@@ -1,27 +1,24 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Cloud, Sparkles, MessageSquare, Users } from 'lucide-react';
+import { Zap, Sparkles, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function SplashScreen({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
   const [showModeSelect, setShowModeSelect] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setTimeout(() => setShowModeSelect(true), 500);
+          setTimeout(() => setShowModeSelect(true), 400);
           return 100;
         }
         return prev + 2;
       });
-    }, 30);
-
+    }, 28);
     return () => clearInterval(interval);
   }, []);
 
@@ -30,84 +27,91 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-950 to-black"
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'linear-gradient(135deg, #0e0e0f 0%, #1a0a05 50%, #0e0e0f 100%)' }}
     >
       {!showModeSelect ? (
-        <div className="text-center">
+        <div className="text-center select-none">
+          {/* Animated ring */}
           <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="relative mb-8"
+            className="relative mb-8 flex items-center justify-center"
           >
             <motion.div
-              animate={{
-                rotate: 360,
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="absolute inset-0 flex items-center justify-center"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+              className="absolute"
             >
-              <div className="h-32 w-32 rounded-full border-4 border-blue-500/30 border-t-yellow-500" />
+              <div className="h-36 w-36 rounded-full border-4 border-transparent"
+                style={{ borderTopColor: '#f05a28', borderRightColor: 'rgba(240,90,40,0.2)' }} />
             </motion.div>
-            
-            <div className="relative flex items-center justify-center h-32 w-32 mx-auto">
-              <Cloud className="h-20 w-20 text-blue-400" strokeWidth={1.5} />
+
+            {/* Core icon */}
+            <div className="relative w-36 h-36 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#f05a28] to-[#e03020] flex items-center justify-center shadow-2xl border-2 border-black/40"
+                style={{ boxShadow: '0 0 40px rgba(240,90,40,0.5)' }}>
+                <Zap className="h-10 w-10 text-white" strokeWidth={2} />
+              </div>
               <motion.div
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.5, 1, 0.5],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                }}
-                className="absolute"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute -top-1 -right-1"
               >
-                <Sparkles className="h-8 w-8 text-yellow-400" />
+                <Sparkles className="h-6 w-6 text-orange-300" />
               </motion.div>
             </div>
           </motion.div>
 
-          <motion.h1
+          {/* Brand name */}
+          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-blue-300 to-yellow-400 bg-clip-text text-transparent"
           >
-            Nimbus AI
-          </motion.h1>
+            <h1 className="text-5xl font-black mb-1 tracking-tight"
+              style={{ background: 'linear-gradient(135deg, #f05a28, #ff8c5a, #e03020)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              SolarisAI
+            </h1>
+            <p className="text-xs font-bold tracking-[0.3em] uppercase text-orange-500/60 mb-6">
+              by terraGravity
+            </p>
+          </motion.div>
 
           <motion.p
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-blue-300/70 mb-8 text-lg"
+            className="text-orange-300/50 mb-8 text-sm"
           >
             Initializing Intelligence...
           </motion.p>
 
+          {/* Progress bar */}
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ delay: 0.7 }}
-            className="w-64 h-2 bg-gray-800 rounded-full overflow-hidden mx-auto"
+            transition={{ delay: 0.6 }}
+            className="w-64 h-1.5 rounded-full overflow-hidden mx-auto border border-black/30"
+            style={{ background: 'rgba(240,90,40,0.1)' }}
           >
             <motion.div
-              className="h-full bg-gradient-to-r from-blue-500 to-yellow-500"
-              style={{ width: `${progress}%` }}
-              transition={{ duration: 0.3 }}
+              className="h-full rounded-full"
+              style={{
+                width: `${progress}%`,
+                background: 'linear-gradient(90deg, #f05a28, #e03020)',
+                boxShadow: '0 0 8px rgba(240,90,40,0.6)',
+                transition: 'width 0.1s linear',
+              }}
             />
           </motion.div>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="text-blue-400/50 mt-4 text-sm"
+            transition={{ delay: 0.9 }}
+            className="text-orange-500/40 mt-3 text-xs font-mono"
           >
             {progress}%
           </motion.p>
@@ -118,33 +122,26 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <h2 className="text-4xl font-bold text-white mb-4">Choose Your Mode</h2>
-          <p className="text-white/60 mb-12">Select how you want to use Nimbus AI</p>
+          <div className="mb-6">
+            <h2 className="text-4xl font-black text-white mb-2">Ready</h2>
+            <p className="text-orange-400/60 text-sm tracking-widest uppercase">SolarisAI · terraGravity</p>
+          </div>
 
-          <div className="flex gap-6">
+          <div className="flex gap-6 justify-center">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               onClick={onComplete}
-              className="w-64 h-48 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 hover:shadow-2xl hover:shadow-blue-500/50 transition-shadow"
+              className="w-64 h-44 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 transition-shadow border-2 border-black/30"
+              style={{
+                background: 'linear-gradient(135deg, #f05a28, #e03020)',
+                boxShadow: '0 20px 60px rgba(240,90,40,0.4)',
+              }}
             >
-              <MessageSquare className="w-16 h-16 text-white" />
+              <MessageSquare className="w-14 h-14 text-white" strokeWidth={1.5} />
               <div>
-                <h3 className="text-2xl font-bold text-white mb-2">Agent Mode</h3>
-                <p className="text-white/80 text-sm">AI assistant for tasks, coding, and productivity</p>
-              </div>
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => router.push('/roleplay')}
-              className="w-64 h-48 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 hover:shadow-2xl hover:shadow-purple-500/50 transition-shadow"
-            >
-              <Users className="w-16 h-16 text-white" />
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-2">Roleplay Mode</h3>
-                <p className="text-white/80 text-sm">Immersive character-driven storytelling</p>
+                <h3 className="text-xl font-bold text-white mb-1">Agent Mode</h3>
+                <p className="text-white/70 text-xs">AI assistant for tasks, coding & productivity</p>
               </div>
             </motion.button>
           </div>

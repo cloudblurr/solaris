@@ -16,11 +16,10 @@ import PlanPanel from '@/components/panels/plan-panel';
 import ComparePanel from '@/components/panels/compare-panel';
 import TasksPanel from '@/components/panels/tasks-panel';
 import SkyNotesPanel from '@/components/panels/skynotes-panel';
-import NimbusCloudPanel from '@/components/panels/nimbus-clouds-panel';
 import CourseSkyPanel from '@/components/panels/coursesky-panel';
 import { Course } from '@/lib/features';
 
-type FeatureId = 'plan' | 'compare' | 'tasks' | 'skynotes' | 'clouds' | 'coursesky';
+type FeatureId = 'plan' | 'compare' | 'tasks' | 'skynotes' | 'coursesky';
 
 interface RightRailProps {
   threadId?: string;
@@ -35,7 +34,6 @@ const features: { id: FeatureId; icon: React.ElementType; label: string; color: 
   { id: 'compare',   icon: Scale,         label: 'Compare',       color: 'text-blue-400',   accent: 'bg-blue-400/10 border-blue-400/30' },
   { id: 'tasks',     icon: CheckSquare,   label: 'Tasks',         color: 'text-green-400',  accent: 'bg-green-400/10 border-green-400/30' },
   { id: 'skynotes',  icon: StickyNote,    label: 'SkyNotes',      color: 'text-purple-400', accent: 'bg-purple-400/10 border-purple-400/30' },
-  { id: 'clouds',    icon: Cloud,         label: 'NimbusClouds',  color: 'text-cyan-400',   accent: 'bg-cyan-400/10 border-cyan-400/30' },
   { id: 'coursesky', icon: GraduationCap, label: 'CourseSky',     color: 'text-orange-400', accent: 'bg-orange-400/10 border-orange-400/30' },
 ];
 
@@ -82,7 +80,6 @@ export default function RightRail({ threadId, chatContext, onNewThread, onStartC
                 />
               )}
               {active === 'skynotes'  && <SkyNotesPanel threadId={threadId} onRefresh={onNotesRefresh} />}
-              {active === 'clouds'    && <NimbusCloudPanel />}
               {active === 'coursesky' && (
                 <CourseSkyPanel
                   threadId={threadId}

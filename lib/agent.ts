@@ -1,7 +1,24 @@
-// Digital Ocean Gradient AI Agent Platform Integration
-// API docs: https://docs.digitalocean.com/products/gradientai-platform/how-to/use-agents/
-const AGENT_ENDPOINT = process.env.NEXT_PUBLIC_AGENT_ENDPOINT || 'https://fujduaaklpje5mkns7vwjpqw.agents.do-ai.run';
-const ACCESS_KEY = process.env.NEXT_PUBLIC_AGENT_ACCESS_KEY || 'fIhPlDAAOiA_3VJMj_cg3QHN5lz5q0K_';
+// All LLM calls go through the server-side proxy at /api/agent/chat
+// so the DigitalOcean API token never touches the browser.
+const CHAT_API = '/api/agent/chat';
+
+async function callLLM(messages: { role: 'system' | 'user' | 'assistant'; content: string }[]): Promise<string> {
+  const response = await fetch(CHAT_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, stream: false }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: response.statusText }));
+    throw new Error(`Agent API error ${response.status}: ${err.detail || err.error || response.statusText}`);
+  }
+
+  const data = await response.json();
+  const content = data?.choices?.[0]?.message?.content;
+  if (!content) throw new Error('Unexpected response format from agent');
+  return content;
+}
 
 export interface Message {
   id: string;
@@ -157,7 +174,6 @@ export async function sendMessageToAgent(
   const fileContext = buildFileContext(attachments);
   const fullMessage = message + fileContext;
 
-  // Build messages array with system prompt for the active mode
   const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
     { role: 'system', content: modeConfig.systemPrompt },
     ...conversationHistory.map((m) => ({
@@ -167,24 +183,7 @@ export async function sendMessageToAgent(
     { role: 'user', content: fullMessage },
   ];
 
-  const response = await fetch(`${AGENT_ENDPOINT}/api/v1/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${ACCESS_KEY}`,
-    },
-    body: JSON.stringify({ messages, stream: false }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => response.statusText);
-    throw new Error(`Agent API error ${response.status}: ${errorText}`);
-  }
-
-  const data = await response.json();
-  const content = data?.choices?.[0]?.message?.content;
-  if (!content) throw new Error('Unexpected response format from agent');
-  return content;
+  return callLLM(messages);
 }
 
 // ── Prompt enhancer ───────────────────────────────────────────────────────────
@@ -193,30 +192,35 @@ export async function enhancePrompt(
   variationSeed: number = 0
 ): Promise<string> {
   const styles = [
-    'Make this prompt more specific, detailed, and effective. Add context, constraints, and desired output format.',
-    'Rewrite this prompt to be more creative and expansive. Add interesting angles and encourage a richer response.',
-    'Transform this into a structured prompt with clear objectives, context, and success criteria.',
+    'Rewrite the user\'s draft message to be clearer, more specific, and better structured. Keep the same intent and topic — just make it a better question or request.',
+    'Rewrite the user\'s draft message with more context and detail so the AI can give a richer, more useful answer. Preserve the original intent exactly.',
+    'Rewrite the user\'s draft message to be more concise and direct while adding any missing context that would help get a precise answer.',
   ];
   const style = styles[variationSeed % styles.length];
 
-  const messages = [
+  const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
     {
-      role: 'system' as const,
-      content: `You are a prompt engineering expert. ${style} Return ONLY the enhanced prompt text — no explanation, no quotes, no preamble.`,
+      role: 'system',
+      content: [
+        'You are a prompt-rewriting assistant. Your ONLY job is to rewrite the user\'s draft input into a better version of the same question or request.',
+        style,
+        'STRICT RULES:',
+        '- Output ONLY the rewritten prompt text. Nothing else.',
+        '- Do NOT answer the question. Do NOT explain anything. Do NOT add a preamble.',
+        '- Do NOT include phrases like "Here is a rewritten version:" or "Enhanced prompt:".',
+        '- The output must be something the user would type into a chat box — not a response to them.',
+        '- Keep the same language as the input.',
+      ].join('\n'),
     },
-    { role: 'user' as const, content: original },
+    {
+      role: 'user',
+      content: `Rewrite this into a better prompt:\n\n${original}`,
+    },
   ];
 
-  const response = await fetch(`${AGENT_ENDPOINT}/api/v1/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${ACCESS_KEY}`,
-    },
-    body: JSON.stringify({ messages, stream: false }),
-  });
+  const result = await callLLM(messages);
 
-  if (!response.ok) throw new Error('Enhance failed');
-  const data = await response.json();
-  return data?.choices?.[0]?.message?.content?.trim() || original;
+  // Strip any accidental preamble the model might add despite instructions
+  const preamblePattern = /^(here(?:'s| is)(?: a| the)?(?: rewritten| enhanced| improved| better)?(?: version| prompt)?[:\-–—]?\s*|enhanced prompt[:\-–—]?\s*|rewritten[:\-–—]?\s*)/i;
+  return result.replace(preamblePattern, '').trim() || original;
 }

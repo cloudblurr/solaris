@@ -1,138 +1,356 @@
-# Nimbus AI
+# Background Agent Platform
 
-An AI-powered agent platform with a futuristic chat interface, built with Next.js 16, shadcn/ui, Framer Motion, and Digital Ocean Agent Platform.
+A production-ready background job platform powered by GPT-OSS-120B, built with FastAPI, RQ (Redis Queue), and Streamlit.
 
-## Features
+## 🏗️ Architecture
 
-- 🎨 **Futuristic UI**: Dark blue, gold, and black gradient theming
-- 💬 **Multi-threaded Conversations**: Manage multiple chat threads with persistent memory
-- 🚀 **Splash Screen**: Animated loading experience
-- ⚡ **Quick Actions**: Pre-built prompts for common tasks
-- 🧠 **Extensive Memory**: Per-user conversation history (mock authentication)
-- 🎭 **Smooth Animations**: Framer Motion powered transitions
-- 🎯 **Context Awareness**: Agent maintains context throughout conversations
+- **FastAPI** HTTP service for job submission and status queries
+- **RQ Worker** for background job execution with retry logic
+- **Redis** as the job queue backend
+- **SQLite** for job status persistence
+- **Streamlit** GUI for user-friendly job management
+- **Prometheus** metrics for monitoring
 
-## Tech Stack
+## 📋 Allowed Workflows
 
-- **Framework**: Next.js 16.2.4 (App Router)
-- **UI Components**: shadcn/ui with Radix UI primitives
-- **Styling**: Tailwind CSS 4
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
-- **AI Platform**: Digital Ocean Agent Platform
+The platform supports **only** the following pre-approved workflows:
 
-## Getting Started
+1. **`summarize_text`** – Summarize a block of text
+2. **`generate_report`** – Generate structured reports from CSV/JSON data
+3. **`extract_entities`** – Extract named entities from text
+4. **`periodic_cleanup`** – Delete stale files from a directory
+5. **`scheduled_backup`** – Archive folders to DigitalOcean Spaces
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+Any request for unsupported operations will be rejected with a clear error message.
 
-2. **Configure environment variables**:
-   The `.env.local` file is already set up with your Digital Ocean Agent credentials.
+## 🚀 Quick Start
 
-3. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
+### Prerequisites
 
-4. **Open your browser**:
-   Navigate to [http://localhost:3000](http://localhost:3000)
+- Docker and Docker Compose
+- (Optional) DigitalOcean Spaces credentials for backup functionality
 
-## Project Structure
+### 1. Clone and Configure
 
-```
-nimbus/
-├── app/
-│   ├── layout.tsx          # Root layout
-│   ├── page.tsx            # Main application page
-│   └── globals.css         # Global styles
-├── components/
-│   ├── ui/                 # shadcn/ui components
-│   ├── splash-screen.tsx   # Animated splash screen
-│   ├── sidebar.tsx         # Conversation threads sidebar
-│   ├── chat-panel.tsx      # Main chat interface
-│   └── quick-actions.tsx   # Quick action toolbar
-├── lib/
-│   ├── utils.ts            # Utility functions
-│   ├── agent.ts            # Digital Ocean Agent integration
-│   └── memory.ts           # In-memory conversation storage
-└── .env.local              # Environment variables
+```bash
+git clone <repository-url>
+cd background-agent-platform
 ```
 
-## Features Breakdown
+Create a `.env` file with your configuration:
 
-### Splash Screen
-- Animated loading screen with progress bar
-- Cloud and sparkle animations
-- Gradient text effects
+```env
+# GPT-OSS Inference Endpoint
+GPT_INFERENCE_URL=http://localhost:8000/generate
 
-### Sidebar
-- List of conversation threads
-- Create new conversations
-- Delete existing threads
-- Thread selection with visual feedback
+# DigitalOcean Spaces (optional, for scheduled_backup flow)
+DO_SPACES_KEY=your_spaces_key
+DO_SPACES_SECRET=your_spaces_secret
+DO_SPACES_BUCKET=backups
+DO_SPACES_REGION=nyc3
+```
 
-### Chat Panel
-- Message history display
-- User and assistant avatars
-- Real-time message streaming
-- Typing indicators
-- Timestamp display
+### 2. Start All Services
 
-### Quick Actions
-- Pre-built prompt templates
-- Brainstorm, Code Help, Summarize, Explain, Learn, Quick Task
-- Recent topics tracking
+```bash
+docker compose up -d --build
+```
 
-### Memory System
-- Per-user conversation storage
-- Thread-based organization
-- Automatic title generation from first message
-- Context preservation across sessions
+This will start:
+- **Redis** on port 6379
+- **FastAPI API** on port 8000
+- **RQ Worker** (background process)
+- **Streamlit GUI** on port 8501
 
-## Customization
+### 3. Verify Services
 
-### Theme Colors
-Edit `app/globals.css` to customize the color scheme:
-- Primary: Blue tones
-- Accent: Gold/Yellow tones
-- Background: Black and dark grays
+Check logs for each service:
 
-### Agent Configuration
-Update `.env.local` to change the Digital Ocean Agent endpoint and access key.
+```bash
+# Redis
+docker logs bg-agent-redis
 
-### Quick Actions
-Modify `components/quick-actions.tsx` to add or customize quick action templates.
+# API
+docker logs bg-agent-api
 
-## Production Deployment
+# Worker
+docker logs bg-agent-worker
 
-1. **Build the application**:
-   ```bash
-   npm run build
-   ```
+# GUI
+docker logs bg-agent-gui
+```
 
-2. **Start the production server**:
-   ```bash
-   npm start
-   ```
+### 4. Access the GUI
 
-3. **Deploy to Vercel** (recommended):
-   ```bash
-   vercel deploy
-   ```
+Open your browser to:
 
-## Environment Variables
+```
+http://localhost:8501
+```
 
-- `NEXT_PUBLIC_AGENT_ENDPOINT`: Digital Ocean Agent API endpoint
-- `NEXT_PUBLIC_AGENT_ACCESS_KEY`: API access key
+You can now:
+- Select a workflow from the dropdown
+- Fill in the required parameters
+- Submit jobs and monitor their progress in real-time
 
-## Notes
+## 📡 API Endpoints
 
-- Currently uses mock authentication (`user_demo`)
-- In-memory storage (replace with database for production)
-- Agent API integration may need adjustment based on actual API response format
+### Create a Job
 
-## License
+```bash
+POST http://localhost:8000/jobs
+Content-Type: application/json
 
-MIT
+{
+  "flow": "summarize_text",
+  "payload": {
+    "text": "Your text to summarize here..."
+  }
+}
+```
+
+Response:
+```json
+{
+  "task_id": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "pending",
+  "message": "Job created successfully. Use GET /jobs/{task_id}/status to check progress."
+}
+```
+
+### Check Job Status
+
+```bash
+GET http://localhost:8000/jobs/{task_id}/status
+```
+
+Response:
+```json
+{
+  "task_id": "550e8400-e29b-41d4-a716-446655440000",
+  "flow": "summarize_text",
+  "status": "completed",
+  "result": {
+    "summary": "Generated summary text..."
+  },
+  "error": null,
+  "created_at": "2024-01-15T10:30:00",
+  "updated_at": "2024-01-15T10:30:45",
+  "attempts": 1
+}
+```
+
+### Prometheus Metrics
+
+```bash
+GET http://localhost:8000/metrics
+```
+
+Exposed metrics:
+- `tasks_total{flow="..."}` – Total tasks created per flow
+- `tasks_success{flow="..."}` – Successful completions per flow
+- `tasks_failed{flow="..."}` – Failed tasks per flow
+- `queue_depth` – Current number of pending tasks
+
+## 🔧 Adding a New Workflow
+
+To add a new allowed workflow:
+
+### 1. Update `backend/worker.py`
+
+Add the flow name to `ALLOWED_FLOWS`:
+
+```python
+ALLOWED_FLOWS = {
+    "summarize_text",
+    "generate_report",
+    "extract_entities",
+    "periodic_cleanup",
+    "scheduled_backup",
+    "your_new_flow"  # Add here
+}
+```
+
+Create a handler function:
+
+```python
+def your_new_flow(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Your flow description.
+    
+    Args:
+        payload: Must contain required fields.
+    
+    Returns:
+        dict: Output data.
+    
+    Raises:
+        ValueError: If validation fails.
+    """
+    # Validate inputs
+    required_field = payload.get("required_field")
+    if not required_field:
+        raise ValueError("Missing required field: 'required_field'")
+    
+    # Call GPT-OSS or perform operations
+    result = call_gpt_inference(f"Your prompt: {required_field}")
+    
+    return {"output": result}
+```
+
+Register the handler:
+
+```python
+FLOW_HANDLERS = {
+    # ... existing handlers ...
+    "your_new_flow": your_new_flow
+}
+```
+
+### 2. Update `gui/app.py`
+
+Add the flow to the dropdown and create a form:
+
+```python
+flow = st.sidebar.selectbox(
+    "Select Workflow",
+    [
+        # ... existing flows ...
+        "your_new_flow"
+    ]
+)
+
+# Add form section
+elif flow == "your_new_flow":
+    st.subheader("🆕 Your New Flow")
+    st.markdown("Description of what this flow does.")
+    
+    required_field = st.text_input("Required Field", placeholder="Enter value...")
+    payload = {"required_field": required_field}
+```
+
+### 3. Restart Services
+
+```bash
+docker compose restart api worker gui
+```
+
+## 🛡️ Security Features
+
+- **Path Sanitization**: All file paths are validated using `pathlib.Path` and `os.path.isabs`
+- **Allowed Paths**: Filesystem operations restricted to `/tmp` for security
+- **Input Validation**: Pydantic schemas enforce type safety
+- **Idempotency**: Duplicate task IDs are detected and skipped
+- **Secrets Management**: All credentials read from environment variables
+
+## 📊 Monitoring
+
+### View Metrics
+
+```bash
+curl http://localhost:8000/metrics
+```
+
+### Integrate with Prometheus
+
+Add to your `prometheus.yml`:
+
+```yaml
+scrape_configs:
+  - job_name: 'background-agent'
+    static_configs:
+      - targets: ['localhost:8000']
+```
+
+## 🧪 Testing
+
+Run the test suite:
+
+```bash
+# Install test dependencies
+pip install pytest pytest-asyncio
+
+# Run tests
+pytest tests/ -v
+```
+
+## 📁 Project Structure
+
+```
+background-agent-platform/
+├── backend/
+│   ├── __init__.py
+│   ├── api.py            # FastAPI application
+│   ├── worker.py         # RQ worker and job handlers
+│   ├── models.py         # Pydantic schemas and SQLModel ORM
+│   ├── db.py             # Database initialization and helpers
+│   └── metrics.py        # Prometheus metrics
+├── gui/
+│   └── app.py            # Streamlit web interface
+├── tests/
+│   ├── test_api.py       # API endpoint tests
+│   └── test_worker.py    # Worker function tests
+├── docker-compose.yml    # Multi-container orchestration
+├── Dockerfile            # Backend container image
+├── requirements.txt      # Python dependencies
+└── README.md             # This file
+```
+
+## 🔄 Retry Logic
+
+Jobs automatically retry on failure with exponential backoff:
+
+- **Attempt 1**: Immediate
+- **Attempt 2**: 10 seconds delay
+- **Attempt 3**: 30 seconds delay
+- **Attempt 4**: 60 seconds delay
+- **Attempt 5**: 120 seconds delay
+- **Attempt 6**: 300 seconds delay (final)
+
+After 5 retries, the job is marked as `failed` with the error message stored in the database.
+
+## 🐛 Troubleshooting
+
+### Worker not processing jobs
+
+```bash
+# Check worker logs
+docker logs bg-agent-worker
+
+# Verify Redis connection
+docker exec bg-agent-redis redis-cli ping
+```
+
+### API returns 500 errors
+
+```bash
+# Check API logs
+docker logs bg-agent-api
+
+# Verify database exists
+ls -la jobs.db
+```
+
+### GUI can't connect to API
+
+```bash
+# Check if API is running
+curl http://localhost:8000/health
+
+# Verify Docker network
+docker network inspect background-agent-platform_default
+```
+
+## 📝 License
+
+MIT License - See LICENSE file for details
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Submit a pull request
+
+---
+
+**Built with ❤️ using FastAPI, RQ, and Streamlit**

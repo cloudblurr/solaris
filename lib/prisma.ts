@@ -7,8 +7,10 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaLibSql } from '@prisma/adapter-libsql';
 
+const dbUrl = process.env.DATABASE_URL ?? 'file:./nimbus.db';
+
 const adapter = new PrismaLibSql({
-  url: 'file:./nimbus.db',
+  url: dbUrl,
 });
 
 const globalForPrisma = globalThis as unknown as {

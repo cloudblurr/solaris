@@ -58,7 +58,6 @@ const staticItems: MarketplaceItem[] = [
   { id: 'cloud-sched',    name: 'Scheduler',       description: 'Automated task scheduling and reminder management',         category: 'clouds',     icon: '⏰', author: 'NimbusAI',  downloads: 6780,  rating: 4.7 },
   { id: 'cloud-research', name: 'Bg Researcher',   description: 'Continuous research on specified topics',                   category: 'clouds',     icon: '🔍', author: 'NimbusAI',  downloads: 3890,  rating: 4.6 },
   { id: 'char-mentor',    name: 'Mentor Persona',  description: 'Career and life guidance expert',                           category: 'characters', icon: '🧙', author: 'Community', downloads: 3210,  rating: 4.7 },
-  { id: 'char-partner',   name: 'Roleplay Partner',description: 'Interactive storytelling companion',                        category: 'characters', icon: '🤝', author: 'Community', downloads: 4560,  rating: 4.8 },
   { id: 'app-code',       name: 'Code Runner',     description: 'Execute and test code in multiple languages',               category: 'apps',       icon: '⚡', author: 'NimbusAI',  downloads: 6780,  rating: 4.9, featured: true },
   { id: 'app-mindmap',    name: 'Mind Mapper',     description: 'Create visual mind maps and flowcharts',                    category: 'apps',       icon: '🗺️', author: 'NimbusAI',  downloads: 5430,  rating: 4.6 },
   { id: 'sol-debug',      name: 'Debug Assistant', description: 'Intelligent debugging and error resolution',                category: 'solutions',  icon: '🐛', author: 'NimbusAI',  downloads: 5670,  rating: 4.8 },

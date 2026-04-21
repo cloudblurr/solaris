@@ -5,7 +5,7 @@
  */
 
 import { prisma } from './prisma';
-import { saveConversation, getCloudreveToken } from './cloudreve';
+import { saveConversation } from './cloudreve-stub';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export interface ChatThread {
@@ -281,16 +281,11 @@ export async function updateUserSettings(
 // ── Save conversation to Cloudreve ─────────────────────────────────────────────
 export async function saveThreadToCloudreve(
   userId: string,
-  userEmail: string,
-  storedToken: string | null,
   threadId: string
 ): Promise<boolean> {
   try {
     const thread = await getThread(userId, threadId);
     if (!thread) return false;
-
-    const token = await getCloudreveToken(userId, userEmail, storedToken);
-    if (!token) return false;
 
     const messages = thread.messages.map(m => ({
       role: m.role,
@@ -299,8 +294,7 @@ export async function saveThreadToCloudreve(
       created_at: m.created_at,
     }));
 
-    const success = await saveConversation(token, threadId, messages);
-    return success;
+    return await saveConversation(userId, threadId, messages);
   } catch (error) {
     console.error('[User Data] Failed to save thread to Cloudreve:', error);
     return false;

@@ -44,12 +44,7 @@ export default function Home() {
     }
   }, [session?.user?.id, showSplash]);
 
-  // Create first thread if none exist
-  useEffect(() => {
-    if (!showSplash && threads.length === 0 && session?.user?.id) {
-      handleNewThread();
-    }
-  }, [showSplash, threads.length, session?.user?.id]);
+  // DO NOT auto-create a thread — only create when user clicks "New Chat"
 
   const loadThreads = async () => {
     try {
@@ -380,8 +375,8 @@ export default function Home() {
   // Show loading state while checking auth
   if (status === 'loading') {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-[#0d0d0d]">
-        <div className="animate-pulse text-gray-500">Loading...</div>
+      <div className="h-screen w-screen flex items-center justify-center" style={{ background: '#0e0e0f' }}>
+        <div className="animate-pulse text-gray-600 text-sm">Loading...</div>
       </div>
     );
   }
@@ -400,7 +395,7 @@ export default function Home() {
       </AnimatePresence>
 
       {!showSplash && (
-        <div className="h-screen w-screen flex overflow-hidden bg-[#0d0d0d]">
+        <div className="h-screen w-screen flex overflow-hidden" style={{ background: '#0e0e0f' }}>
           <Sidebar
             threads={threads}
             activeThreadId={activeThreadId}
@@ -448,19 +443,19 @@ export default function Home() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="w-80 border-l border-white/5 bg-[#0a0a0a] overflow-hidden"
+                className="w-80 border-l border-white/5 bg-[#141416] overflow-hidden"
               >
                 <div className="p-4 border-b border-white/5">
-                  <h2 className="text-lg font-semibold text-white">Nimbus Sky-Way</h2>
+                  <h2 className="text-lg font-semibold text-white">SolarisAI Sky-Way</h2>
                   <p className="text-xs text-gray-500">Create & switch between agents</p>
                 </div>
                 <div className="p-4 space-y-4">
-                  <button className="w-full p-4 rounded-xl bg-gradient-to-r from-yellow-500/20 to-yellow-400/20 border border-yellow-500/30 hover:border-yellow-500 transition-all text-left">
+                  <button className="w-full p-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 hover:border-orange-500 transition-all text-left">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">➕</span>
                       <div>
                         <div className="text-sm font-medium text-white">Create New Agent</div>
-                        <div className="text-xs text-gray-500">Build a custom Nimbus Agent</div>
+                        <div className="text-xs text-gray-500">Build a custom Solaris Agent</div>
                       </div>
                     </div>
                   </button>
@@ -472,11 +467,11 @@ export default function Home() {
                   
                   <div className="space-y-2 pt-2">
                     <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Active Agent</h3>
-                    <div className="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30">
+                    <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/30">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">☁️</span>
+                        <span className="text-2xl">⚡</span>
                         <div>
-                          <div className="text-sm font-medium text-white">Nimbus Core</div>
+                          <div className="text-sm font-medium text-white">Solaris Core</div>
                           <div className="text-xs text-gray-500">Default agent</div>
                         </div>
                       </div>
@@ -491,7 +486,7 @@ export default function Home() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="w-80 border-l border-white/5 bg-[#0a0a0a] overflow-hidden"
+                className="w-80 border-l border-white/5 bg-[#141416] overflow-hidden"
               >
                 <div className="p-4 border-b border-white/5">
                   <h2 className="text-lg font-semibold text-white">Library</h2>
@@ -534,10 +529,10 @@ export default function Home() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="w-80 border-l border-white/5 bg-[#0a0a0a] overflow-hidden"
+                className="w-80 border-l border-white/5 bg-[#141416] overflow-hidden"
               >
                 <div className="p-4 border-b border-white/5">
-                  <h2 className="text-lg font-semibold text-white">Nimbus Spaces</h2>
+                  <h2 className="text-lg font-semibold text-white">Solaris Spaces</h2>
                   <p className="text-xs text-gray-500">Create & manage projects</p>
                 </div>
                 <div className="p-4 space-y-3">

@@ -1,10 +1,5 @@
-// Shared helper for feature panels to call the DO Agent without a full chat thread
-const AGENT_ENDPOINT =
-  process.env.NEXT_PUBLIC_AGENT_ENDPOINT ||
-  'https://fujduaaklpje5mkns7vwjpqw.agents.do-ai.run';
-const ACCESS_KEY =
-  process.env.NEXT_PUBLIC_AGENT_ACCESS_KEY ||
-  'fIhPlDAAOiA_3VJMj_cg3QHN5lz5q0K_';
+// Shared helper for feature panels to call the DO Agent without a full chat thread.
+// Routes through the server-side proxy so the API token never hits the browser.
 
 export async function agentQuery(
   systemPrompt: string,
@@ -17,18 +12,15 @@ export async function agentQuery(
     { role: 'user' as const, content: userMessage },
   ];
 
-  const res = await fetch(`${AGENT_ENDPOINT}/api/v1/chat/completions`, {
+  const res = await fetch('/api/agent/chat', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${ACCESS_KEY}`,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages, stream: false }),
   });
 
   if (!res.ok) {
-    const txt = await res.text().catch(() => res.statusText);
-    throw new Error(`Agent error ${res.status}: ${txt}`);
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(`Agent error ${res.status}: ${err.detail || err.error || res.statusText}`);
   }
 
   const data = await res.json();

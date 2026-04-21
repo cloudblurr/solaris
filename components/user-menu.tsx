@@ -63,7 +63,7 @@ export default function UserMenu({ onOpenProfile, onOpenSettings }: UserMenuProp
       >
         <Avatar className="h-8 w-8 shrink-0 border border-white/10">
           <AvatarImage src={session.user.image || undefined} alt={session.user.name || 'User'} />
-          <AvatarFallback className="bg-gradient-to-br from-yellow-400 to-yellow-600 text-black text-xs font-bold">
+          <AvatarFallback className="bg-gradient-to-br from-[#f05a28] to-[#e03020] text-white text-xs font-bold border border-black/20">
             {initials}
           </AvatarFallback>
         </Avatar>
@@ -92,8 +92,8 @@ export default function UserMenu({ onOpenProfile, onOpenSettings }: UserMenuProp
             {/* Membership badge */}
             <div className="px-4 py-3 border-b border-white/5">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-                  <Crown className="h-3 w-3 text-black" />
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#f05a28] to-[#e03020] flex items-center justify-center border border-black/20">
+                  <Crown className="h-3 w-3 text-white" />
                 </div>
                 <div>
                   <p className="text-xs font-medium text-white">Free Plan</p>
