@@ -45,6 +45,7 @@
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
+    "@cloudflare/containers": "^0.3.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -54,6 +55,7 @@
     "eslint-config-next": "16.2.4",
     "fast-check": "^4.7.0",
     "tailwindcss": "^4",
+    "tweetsodium": "^0.0.4",
     "typescript": "^5",
     "vitest": "^4.1.4"
   }

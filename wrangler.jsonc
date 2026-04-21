@@ -1,0 +1,33 @@
+{
+  "name": "nimbusai",
+  "main": "worker/src/index.ts",
+  "compatibility_date": "2025-04-01",
+
+  "containers": [
+    {
+      "class_name": "NimbusAI",
+      "image": "ghcr.io/cloudblurr/nimbusai:latest",
+      "max_instances": 3
+    }
+  ],
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "NIMBUSAI",
+        "class_name": "NimbusAI"
+      }
+    ]
+  },
+
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["NimbusAI"]
+    }
+  ],
+
+  "vars": {
+    "NODE_ENV": "production"
+  }
+}
