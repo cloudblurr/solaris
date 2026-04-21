@@ -201,7 +201,7 @@ export async function submitReview(
   });
   // Recompute rating_sum and rating_count
   const reviews = await prisma.marketplaceReview.findMany({ where: { entry_id: entryId } });
-  const sum = reviews.reduce((acc: number, r) => acc + r.rating, 0);
+  const sum = reviews.reduce((acc: number, r: { rating: number }) => acc + r.rating, 0);
   await prisma.marketplaceEntry.update({
     where: { id: entryId },
     data: { rating_sum: sum, rating_count: reviews.length },

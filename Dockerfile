@@ -11,6 +11,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+# Skip type checking in Docker — types are verified in CI before image build
+ENV NEXT_SKIP_TYPE_CHECK=1
 RUN npm run build
 
 # Stage 3: Runtime
