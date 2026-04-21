@@ -184,7 +184,7 @@ export async function getUserInstalledItems(userId: string): Promise<string[]> {
     where: { user_id: userId },
     select: { entry_id: true },
   });
-  return items.map((i) => i.entry_id);
+  return items.map((i: { entry_id: string }) => i.entry_id);
 }
 
 // ── Reviews ────────────────────────────────────────────────────────────────────

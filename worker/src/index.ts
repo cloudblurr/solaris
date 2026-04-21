@@ -29,7 +29,7 @@ export default {
     const container = env.NIMBUSAI.getByName("nimbusai-prod");
     return await container.fetch(request);
   },
-} satisfies ExportedHandler<Env>;
+};
 
 interface Env {
   NIMBUSAI: DurableObjectNamespace;
